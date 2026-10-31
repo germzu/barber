@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Запись</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --bg: var(--tg-theme-bg-color, #ffffff);
+    --text: var(--tg-theme-text-color, #111111);
+    --hint: var(--tg-theme-hint-color, #8a8a8e);
+    --accent: var(--tg-theme-button-color, #2481cc);
+    --accent-text: var(--tg-theme-button-text-color, #ffffff);
+    --card: var(--tg-theme-secondary-bg-color, #f2f2f7);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    padding: 16px 16px 96px;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  h1 { font-size: 22px; margin: 0 0 2px; }
+  .rating { color: var(--hint); font-size: 14px; }
+  h2 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--hint); margin: 24px 0 8px; font-weight: 600;
+  }
+  .list { display: flex; flex-direction: column; gap: 8px; }
+  .opt {
+    background: var(--card); border: 2px solid transparent; border-radius: 12px;
+    padding: 12px 14px; display: flex; justify-content: space-between;
+    align-items: center; cursor: pointer;
+  }
+  .opt.sel, .chip.sel { border-color: var(--accent); }
+  .opt .price { color: var(--hint); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    background: var(--card); border: 2px solid transparent; border-radius: 10px;
+    padding: 10px 14px; cursor: pointer; min-width: 64px; text-align: center;
+  }
+  .chip.off { opacity: .35; pointer-events: none; text-decoration: line-through; }
+  .note { color: var(--hint); font-size: 14px; }
+  .review { background: var(--card); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
+  .review .stars { color: #f5a623; }
+  .review p { margin: 4px 0 0; word-break: break-word; }
+  .hidden { display: none !important; }
+  #summary { margin-top: 20px; padding: 12px 14px; background: var(--card); border-radius: 12px; }
+  #fallbackBtn {
+    position: fixed; left: 16px; right: 16px; bottom: 16px; padding: 14px;
+    border: 0; border-radius: 12px; background: var(--accent); color: var(--accent-text);
+    font-size: 16px; font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<h1 id="shop">Запись</h1>
+<div class="rating" id="rating"></div>
+
+<h2>Услуга</h2>
+<div class="list" id="services"></div>
+
+<h2>Мастер</h2>
+<div class="list" id="masters"></div>
+
+<h2>День</h2>
+<div class="chips" id="days"></div>
+
+<h2>Время</h2>
+<div class="chips" id="times"></div>
+<div class="note" id="timesNote"></div>
+
+<div id="summary" class="hidden"></div>
+
+<h2 id="reviewsTitle" class="hidden">Отзывы</h2>
+<div id="reviews"></div>
+
+<button id="fallbackBtn" class="hidden">Записаться</button>
+
+<script>
+const tg = window.Telegram && window.Telegram.WebApp;
+const inTelegram = !!(tg && tg.initData);
+if (tg) { tg.ready(); tg.expand(); }
+
+// Данные для демо (когда страница открыта просто в браузере, без бота)
+function demoDays() {
+  const out = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(Date.now() + i * 86400000);
+    out.push(d.toISOString().slice(0, 10));
+  }
+  return out;
+}
+const DEMO = {
+  n: "BarberShop (демо)",
+  sv: [["Стрижка", 1000], ["Борода", 700], ["Стрижка + борода", 1500]],
+  ms: ["Алексей", "Дмитрий"],
+  sl: ["10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30"],
+  days: demoDays(),
+  b: {},
+  r: [4.8, 2, [[5, "Отличная стрижка, всё быстро."], [5, "Приду ещё."]]]
+};
+
+function decode(p) {
+  p = p.replace(/-/g, "+").replace(/_/g, "/");
+  while (p.length % 4) p += "=";
+  const bytes = Uint8Array.from(atob(p), c => c.charCodeAt(0));
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+
+let cfg = DEMO;
+try {
+  const p = new URLSearchParams(location.search).get("p");
+  if (p) cfg = decode(p);
+} catch (e) { console.error("Не удалось прочитать данные", e); }
+
+const state = { s: null, m: null, d: null, t: null };
+const WD = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+
+function dayLabel(iso) {
+  const d = new Date(iso + "T12:00:00");
+  return WD[d.getDay()] + " " + iso.slice(8, 10) + "." + iso.slice(5, 7);
+}
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+function renderHeader() {
+  document.getElementById("shop").textContent = cfg.n;
+  const [avg, count] = cfg.r;
+  document.getElementById("rating").textContent =
+    count ? "⭐ " + avg + " · отзывов: " + count : "";
+}
+
+function renderServices() {
+  const box = document.getElementById("services");
+  box.innerHTML = "";
+  cfg.sv.forEach(([name, price], i) => {
+    const o = el("div", "opt" + (state.s === i ? " sel" : ""));
+    o.appendChild(el("span", "", name));
+    o.appendChild(el("span", "price", price + " ₽"));
+    o.onclick = () => { state.s = i; renderAll(); };
+    box.appendChild(o);
+  });
+}
+
+function renderMasters() {
+  const box = document.getElementById("masters");
+  box.innerHTML = "";
+  cfg.ms.forEach((name, i) => {
+    const o = el("div", "opt" + (state.m === i ? " sel" : ""), name);
+    o.onclick = () => { state.m = i; renderAll(); };
+    box.appendChild(o);
+  });
+}
+
+function renderDays() {
+  const box = document.getElementById("days");
+  box.innerHTML = "";
+  cfg.days.forEach(d => {
+    const c = el("div", "chip" + (state.d === d ? " sel" : ""), dayLabel(d));
+    c.onclick = () => { state.d = d; renderAll(); };
+    box.appendChild(c);
+  });
+}
+
+function renderTimes() {
+  const box = document.getElementById("times");
+  const note = document.getElementById("timesNote");
+  box.innerHTML = "";
+  if (state.m === null || state.d === null) {
+    note.textContent = "Сначала выберите мастера и день.";
+    return;
+  }
+  note.textContent = "";
+  const busy = new Set(((cfg.b[state.d] || [])[state.m]) || []);
+  if (state.t !== null && busy.has(cfg.sl.indexOf(state.t))) state.t = null;
+  let anyFree = false;
+  cfg.sl.forEach((t, i) => {
+    const isBusy = busy.has(i);
+    if (!isBusy) anyFree = true;
+    const c = el("div", "chip" + (isBusy ? " off" : "") + (state.t === t ? " sel" : ""), t);
+    c.onclick = () => { state.t = t; renderAll(); };
+    box.appendChild(c);
+  });
+  if (!anyFree) note.textContent = "На этот день всё занято, выберите другой.";
+}
+
+function renderReviews() {
+  const box = document.getElementById("reviews");
+  const title = document.getElementById("reviewsTitle");
+  box.innerHTML = "";
+  const list = cfg.r[2] || [];
+  title.classList.toggle("hidden", list.length === 0);
+  list.forEach(([n, text]) => {
+    const r = el("div", "review");
+    r.appendChild(el("span", "stars", "★".repeat(n) + "☆".repeat(5 - n)));
+    r.appendChild(el("p", "", text));
+    box.appendChild(r);
+  });
+}
+
+function isReady() {
+  return state.s !== null && state.m !== null && state.d !== null && state.t !== null;
+}
+
+function renderSummary() {
+  const box = document.getElementById("summary");
+  if (!isReady()) { box.classList.add("hidden"); return; }
+  const [name, price] = cfg.sv[state.s];
+  box.textContent = name + " · " + price + " ₽ · " + cfg.ms[state.m] + " · " +
+    dayLabel(state.d) + ", " + state.t;
+  box.classList.remove("hidden");
+}
+
+function updateButton() {
+  const ready = isReady();
+  if (inTelegram) {
+    if (ready) { tg.MainButton.setText("Записаться"); tg.MainButton.show(); }
+    else tg.MainButton.hide();
+  } else {
+    document.getElementById("fallbackBtn").classList.toggle("hidden", !ready);
+  }
+}
+
+function submit() {
+  if (!isReady()) return;
+  const data = JSON.stringify({ s: state.s, m: state.m, d: state.d, t: state.t });
+  if (inTelegram) tg.sendData(data);
+  else alert("Демо-режим (вне Telegram). Отправилось бы: " + data);
+}
+
+function renderAll() {
+  renderServices();
+  renderMasters();
+  renderDays();
+  renderTimes();
+  renderSummary();
+  updateButton();
+}
+
+if (inTelegram) tg.MainButton.onClick(submit);
+document.getElementById("fallbackBtn").onclick = submit;
+
+renderHeader();
+renderReviews();
+renderAll();
+</script>
+</body>
+</html>
