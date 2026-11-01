@@ -17,6 +17,7 @@
     --gold2: #ecd29a;
     --text: #f4f1ea;
     --muted: #8d8a84;
+    --danger: #e08a8a;
     --serif: Georgia, "Times New Roman", serif;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
   }
@@ -25,8 +26,7 @@
   body { padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px)); min-height: 100vh; overflow-x: hidden; }
   .hidden { display: none !important; }
 
-  /* прогресс */
-  #barWrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: transparent; z-index: 20; }
+  #barWrap { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 20; }
   #bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--gold), var(--gold2)); transition: width .35s ease; }
   #back {
     position: fixed; top: 12px; left: 12px; z-index: 20; background: var(--card2); color: var(--text);
@@ -38,7 +38,6 @@
   @keyframes slide { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
   .pad { padding: 0 18px; }
 
-  /* шапка */
   .hero {
     position: relative; text-align: center; padding: 44px 20px 30px; overflow: hidden;
     background:
@@ -67,6 +66,17 @@
   .review .st { color: var(--gold); letter-spacing: 2px; }
   .review p { margin: 6px 0 0; word-break: break-word; color: #dcd8cf; }
 
+  /* ваша запись */
+  .mycard { background: #1f1b14; border: 1px solid var(--gold); border-radius: 16px; padding: 14px; margin-bottom: 10px; }
+  .mycard b { font: 700 18px var(--serif); color: var(--gold2); }
+  .mycard .sub { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .myrow { display: flex; gap: 8px; margin-top: 12px; }
+  .sbtn {
+    flex: 1; border: 1px solid var(--gold); background: transparent; color: var(--gold2);
+    border-radius: 10px; padding: 10px; font: 600 14px var(--sans);
+  }
+  .sbtn.danger { border-color: #7a3b3b; color: var(--danger); }
+
   /* шаги */
   .step { padding: 62px 18px 0; }
   .step small { color: var(--gold); letter-spacing: .12em; text-transform: uppercase; font-size: 12px; font-weight: 600; }
@@ -88,7 +98,6 @@
   .card .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
   .card .price { font: 700 18px var(--serif); color: var(--gold2); white-space: nowrap; }
 
-  /* дни */
   .days { display: flex; gap: 8px; overflow-x: auto; padding: 2px 18px 8px; margin: 0 -18px; scrollbar-width: none; }
   .days::-webkit-scrollbar { display: none; }
   .day {
@@ -111,7 +120,6 @@
   .time.off { opacity: .28; pointer-events: none; text-decoration: line-through; }
   .note { color: var(--muted); font-size: 14px; margin-top: 12px; }
 
-  /* билет */
   .ticket { background: var(--card); border: 1px solid var(--gold); border-radius: 18px; padding: 6px 18px; }
   .trow { display: flex; justify-content: space-between; gap: 12px; padding: 14px 0; border-bottom: 1px dashed var(--line); }
   .trow span { color: var(--muted); }
@@ -119,7 +127,39 @@
   .ttotal { display: flex; justify-content: space-between; align-items: baseline; padding: 16px 0 12px; }
   .ttotal b { font: 700 28px var(--serif); color: var(--gold2); }
 
-  /* кнопка (для браузера; в Telegram работает MainButton) */
+  /* панель владельца */
+  .hero.small { padding: 30px 20px 20px; }
+  .hero.small .pole { height: 48px; margin-bottom: 10px; }
+  .hero.small h1 { font-size: 26px; }
+  .hero.small .tag { margin-bottom: 0; }
+  .tabs { display: flex; gap: 6px; padding: 14px 18px 4px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
+  .tab {
+    flex: 1; border: 1px solid var(--line); background: var(--card); color: var(--text);
+    border-radius: 12px; padding: 10px 0; font: 600 14px var(--sans);
+  }
+  .tab.sel { background: linear-gradient(135deg, var(--gold2), var(--gold)); color: #15120d; border-color: var(--gold); }
+  .dayhead { font: 600 13px var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--gold); margin: 20px 0 8px; }
+  .orow { display: flex; align-items: center; gap: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px; margin-bottom: 8px; }
+  .otime { font: 700 18px var(--serif); color: var(--gold2); min-width: 56px; }
+  .oinfo { flex: 1; min-width: 0; }
+  .oname { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .osub { color: var(--muted); font-size: 13px; }
+  .obtn { border: 1px solid #7a3b3b; background: transparent; color: var(--danger); border-radius: 10px; padding: 8px 10px; font-size: 13px; }
+  .sgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .scard { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+  .scard .sl { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+  .scard .sn { font: 700 26px var(--serif); color: var(--gold2); margin: 2px 0; }
+  .scard .ss { color: var(--muted); font-size: 13px; }
+  .krow { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed var(--line); }
+  .krow span { color: var(--muted); }
+  .brow { display: flex; align-items: center; gap: 8px; margin: 8px 0; font-size: 14px; }
+  .bl { width: 42%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bbar { flex: 1; height: 8px; background: var(--card2); border-radius: 4px; overflow: hidden; }
+  .bfill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold2)); border-radius: 4px; }
+  .bc { width: 28px; text-align: right; color: var(--muted); }
+  .dyrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  .dyrow .closed { color: var(--danger); font-size: 13px; }
+
   #mainBtn {
     position: fixed; left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 20;
     border: 0; border-radius: 14px; padding: 16px; font: 700 16px var(--sans); color: #15120d;
@@ -141,6 +181,8 @@
     <div class="pills"><span class="pill" id="pRating"></span><span class="pill" id="pHours"></span><span class="pill hidden" id="pDemo"></span></div>
   </div>
   <div class="pad">
+    <div class="sec hidden" id="myT">Ваши записи</div>
+    <div id="myBox"></div>
     <div class="sec">Услуги и цены</div>
     <div id="homeServices"></div>
     <div class="sec" id="revT">Отзывы</div>
@@ -161,7 +203,7 @@
 <!-- 3. Дата и время -->
 <section class="screen" id="s3">
   <div class="step">
-    <small>Шаг 3 из 4</small><h2>Дата и время</h2>
+    <small id="s3small">Шаг 3 из 4</small><h2 id="s3title">Дата и время</h2>
     <div class="days" id="days"></div>
     <div class="times" id="times"></div>
     <div class="note" id="timesNote"></div>
@@ -170,7 +212,27 @@
 
 <!-- 4. Подтверждение -->
 <section class="screen" id="s4">
-  <div class="step"><small>Шаг 4 из 4</small><h2>Ваша запись</h2><div class="ticket" id="ticket"></div></div>
+  <div class="step"><small id="s4small">Шаг 4 из 4</small><h2 id="s4title">Ваша запись</h2><div class="ticket" id="ticket"></div></div>
+</section>
+
+<!-- Панель владельца -->
+<section class="screen" id="sOwner">
+  <div class="hero small">
+    <div class="pole"></div>
+    <h1 id="oShop"></h1>
+    <p class="tag">Панель владельца</p>
+  </div>
+  <div class="tabs">
+    <button class="tab sel" id="tabBk">Записи</button>
+    <button class="tab" id="tabSt">Статистика</button>
+    <button class="tab" id="tabDy">Дни</button>
+  </div>
+  <div class="pad">
+    <div id="paneBk"></div>
+    <div id="paneSt" class="hidden"></div>
+    <div id="paneDy" class="hidden"></div>
+    <p class="note" id="oNote"></p>
+  </div>
 </section>
 
 <button id="mainBtn" class="hidden"></button>
@@ -203,8 +265,21 @@ const DEMO = {
   ms: ["Алексей", "Дмитрий"],
   sl: ["10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30"],
   days: demoDays(),
-  b: {},
-  r: [5, 2, [[5, "Отличная стрижка, всё быстро и аккуратно."], [5, "Приду ещё, мастер молодец."]]]
+  b: [[3, 0], [0, 12]],
+  r: [5, 2, [[5, "Отличная стрижка, всё быстро и аккуратно."], [5, "Приду ещё, мастер молодец."]]],
+  my: [["demo0001", 1, "11:00", 0, 0]]
+};
+const DEMO_OWNER = {
+  mode: "owner",
+  n: "BarberShop",
+  sv: ["Стрижка", "Борода", "Стрижка + борода"],
+  ms: ["Алексей", "Дмитрий"],
+  days: demoDays(),
+  cl: [3],
+  bk: [[0, "15:00", 0, 0, "Иван П.", "a1"], [0, "16:30", 1, 2, "Сергей К.", "a2"], [1, "10:00", 0, 1, "Анна", "a3"], [1, "12:30", 1, 0, "Максим", "a4"]],
+  more: 0,
+  st: { t: [3, 3200], w: [24, 28400], m: [96, 112300], u: [18, 21000], c: 4, rp: 41, rt: [4.8, 12],
+        sv: [[0, 52], [2, 30], [1, 14]], ms: [[0, 55], [1, 41]], hr: [[18, 21], [17, 17], [12, 14]] }
 };
 function decode(p) {
   p = p.replace(/-/g, "+").replace(/_/g, "/");
@@ -214,9 +289,13 @@ function decode(p) {
 }
 let cfg = DEMO;
 try {
-  const p = new URLSearchParams(location.search).get("p");
+  const params = new URLSearchParams(location.search);
+  const p = params.get("p");
   if (p) cfg = decode(p);
+  else if (params.get("demo") === "owner") cfg = DEMO_OWNER;
 } catch (e) { console.error("Не удалось прочитать данные", e); }
+const OWNER = cfg.mode === "owner";
+const IS_DEMO = cfg === DEMO;
 
 // ---------- утилиты ----------
 const $ = id => document.getElementById(id);
@@ -235,17 +314,44 @@ function fullDate(iso) {
   const d = dateObj(iso);
   return WD_FULL[d.getDay()] + ", " + d.getDate() + " " + MON_GEN[d.getMonth()];
 }
+function shortDate(iso) {
+  const d = dateObj(iso);
+  return WD[d.getDay()] + " " + String(d.getDate()).padStart(2, "0") + "." + String(d.getMonth() + 1).padStart(2, "0");
+}
 function addMin(t, add) {
   const [hh, mm] = t.split(":").map(Number);
   const x = hh * 60 + mm + add;
   return String(Math.floor(x / 60)).padStart(2, "0") + ":" + String(x % 60).padStart(2, "0");
 }
+function money(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₽"; }
 function buzz() { try { tg.HapticFeedback.selectionChanged(); } catch (e) {} }
-function busyList(d, m) { return ((cfg.b[d] || [])[m]) || []; }
-function freeCount(d, m) { return cfg.sl.length - busyList(d, m).length; }
 
-// ---------- состояние ----------
-const state = { s: null, m: null, d: null, t: null };
+function sendData(obj) {
+  const data = JSON.stringify(obj);
+  if (inTelegram) tg.sendData(data);
+  else alert("Демо-режим (вне Telegram). Отправилось бы: " + data);
+}
+function askConfirm(text, yes) {
+  if (inTelegram && tg.showConfirm) {
+    try { tg.showConfirm(text, ok => { if (ok) yes(); }); return; } catch (e) {}
+  }
+  if (window.confirm(text)) yes();
+}
+
+// занятость хранится числом-маской на каждый день и мастера: бит i = слот i занят
+function dayIdx(d) { return cfg.days.indexOf(d); }
+function isBusy(d, m, i) {
+  const row = (cfg.b || [])[dayIdx(d)] || [];
+  return (((row[m] || 0) >> i) & 1) === 1;
+}
+function freeCount(d, m) {
+  let c = 0;
+  for (let i = 0; i < cfg.sl.length; i++) if (!isBusy(d, m, i)) c++;
+  return c;
+}
+
+// ---------- состояние клиента ----------
+const state = { s: null, m: null, d: null, t: null, move: null };
 let step = 0;
 let mainHandler = null;
 
@@ -261,29 +367,39 @@ function setMain(text, fn) {
 
 function go(n) {
   step = n;
-  document.querySelectorAll(".screen").forEach((s, i) => s.classList.toggle("active", i === n));
+  ["s0", "s1", "s2", "s3", "s4"].forEach((id, i) => $(id).classList.toggle("active", i === n));
   window.scrollTo(0, 0);
   $("bar").style.width = (n === 0 ? 0 : (n / 4) * 100) + "%";
   $("back").classList.toggle("hidden", n === 0 || inTelegram);
   if (inTelegram) { try { n > 0 ? tg.BackButton.show() : tg.BackButton.hide(); } catch (e) {} }
-  if (n === 0) setMain("Записаться", () => go(1));
+  if (n === 0) setMain("Записаться", () => { state.move = null; go(1); });
   else if (n === 1) { renderServices(); setMain("", null); }
   else if (n === 2) { renderMasters(); setMain("", null); }
   else if (n === 3) renderTime();
-  else if (n === 4) { renderConfirm(); setMain("Подтвердить запись", submit); }
+  else if (n === 4) { renderConfirm(); setMain(state.move ? "Подтвердить перенос" : "Подтвердить запись", submit); }
 }
 
-// ---------- экраны ----------
+function goBack() {
+  if (OWNER || step === 0) return;
+  if (state.move && step === 3) {
+    state.move = null; state.m = null; state.d = null; state.t = null;
+    go(0);
+    return;
+  }
+  go(step - 1);
+}
+
+// ---------- экраны клиента ----------
 function renderHome() {
   $("shop").textContent = cfg.n;
   $("tag").textContent = TAGLINE;
   const [avg, count, list] = cfg.r;
   $("pRating").textContent = count ? "★ " + Number(avg).toFixed(1) + " · " + count + " отз." : "★ новые отзывы скоро";
-  if (cfg === DEMO) {
+  $("pHours").textContent = "🕒 " + cfg.sl[0] + " – " + addMin(cfg.sl[cfg.sl.length - 1], 30);
+  if (IS_DEMO) {
     $("pDemo").textContent = "⚠ демо-данные (от бота ничего не пришло, search=" + location.search.length + ")";
     $("pDemo").classList.remove("hidden");
   }
-  $("pHours").textContent = "🕒 " + cfg.sl[0] + " – " + addMin(cfg.sl[cfg.sl.length - 1], 30);
 
   const box = $("homeServices");
   box.innerHTML = "";
@@ -305,6 +421,38 @@ function renderHome() {
     r.appendChild(h("p", "", text));
     rv.appendChild(r);
   });
+
+  renderMy();
+}
+
+function renderMy() {
+  const box = $("myBox");
+  box.innerHTML = "";
+  const list = cfg.my || [];
+  $("myT").classList.toggle("hidden", list.length === 0);
+  list.forEach(([id, di, time, mi, si]) => {
+    const when = shortDate(cfg.days[di]) + " · " + time;
+    const c = h("div", "mycard");
+    c.appendChild(h("b", "", when));
+    const svc = si >= 0 && cfg.sv[si] ? cfg.sv[si][0] : "Услуга";
+    c.appendChild(h("div", "sub", svc + (mi >= 0 ? " · мастер " + cfg.ms[mi] : "")));
+    const row = h("div", "myrow");
+    const mv = h("button", "sbtn", "Перенести");
+    mv.onclick = () => startMove(id, di, time, mi);
+    const cn = h("button", "sbtn danger", "Отменить");
+    cn.onclick = () => askConfirm("Отменить запись " + when + "?", () => sendData({ c: "x", id: id }));
+    row.appendChild(mv);
+    row.appendChild(cn);
+    c.appendChild(row);
+    box.appendChild(c);
+  });
+}
+
+function startMove(id, di, time, mi) {
+  if (mi < 0) { alert("Этого мастера больше нет. Отмените запись и запишитесь заново."); return; }
+  state.move = { id: id, label: shortDate(cfg.days[di]) + ", " + time };
+  state.m = mi; state.d = null; state.t = null;
+  go(3);
 }
 
 function renderServices() {
@@ -339,7 +487,9 @@ function renderMasters() {
 
 function renderTime() {
   const m = state.m;
-  // если выбранный день недоступен или не выбран, берём первый со свободным временем
+  $("s3small").textContent = state.move ? "Перенос записи" : "Шаг 3 из 4";
+  $("s3title").textContent = state.move ? "Новое время" : "Дата и время";
+
   if (state.d === null || freeCount(state.d, m) === 0) {
     const first = cfg.days.find(d => freeCount(d, m) > 0);
     state.d = first === undefined ? null : first;
@@ -363,14 +513,13 @@ function renderTime() {
   box.innerHTML = "";
   note.textContent = "";
   if (state.d === null) {
-    note.textContent = "На ближайшие дни у этого мастера всё занято. Выберите другого мастера.";
+    note.textContent = "На ближайшие дни у этого мастера всё занято.";
     setMain("", null);
     return;
   }
-  const busy = new Set(busyList(state.d, m));
-  if (state.t !== null && busy.has(cfg.sl.indexOf(state.t))) state.t = null;
+  if (state.t !== null && isBusy(state.d, m, cfg.sl.indexOf(state.t))) state.t = null;
   cfg.sl.forEach((t, i) => {
-    const c = h("div", "time" + (busy.has(i) ? " off" : "") + (state.t === t ? " sel" : ""), t);
+    const c = h("div", "time" + (isBusy(state.d, m, i) ? " off" : "") + (state.t === t ? " sel" : ""), t);
     c.onclick = () => { state.t = t; buzz(); renderTime(); };
     box.appendChild(c);
   });
@@ -379,43 +528,197 @@ function renderTime() {
 }
 
 function renderConfirm() {
-  const [sn, sp] = cfg.sv[state.s];
+  $("s4small").textContent = state.move ? "Перенос записи" : "Шаг 4 из 4";
+  $("s4title").textContent = state.move ? "Новая дата" : "Ваша запись";
   const box = $("ticket");
   box.innerHTML = "";
-  const rows = [
-    ["Услуга", sn],
-    ["Мастер", cfg.ms[state.m]],
-    ["Дата", fullDate(state.d)],
-    ["Время", state.t + " – " + addMin(state.t, 30)]
-  ];
+  let rows;
+  if (state.move) {
+    rows = [
+      ["Было", state.move.label],
+      ["Станет", fullDate(state.d) + ", " + state.t],
+      ["Мастер", cfg.ms[state.m]]
+    ];
+  } else {
+    const [sn] = cfg.sv[state.s];
+    rows = [
+      ["Услуга", sn],
+      ["Мастер", cfg.ms[state.m]],
+      ["Дата", fullDate(state.d)],
+      ["Время", state.t + " – " + addMin(state.t, 30)]
+    ];
+  }
   rows.forEach(([k, v]) => {
     const r = h("div", "trow");
     r.appendChild(h("span", "", k));
     r.appendChild(h("b", "", v));
     box.appendChild(r);
   });
-  const total = h("div", "ttotal");
-  total.appendChild(h("span", "", "Стоимость"));
-  total.appendChild(h("b", "", sp + " ₽"));
-  box.appendChild(total);
+  if (!state.move) {
+    const total = h("div", "ttotal");
+    total.appendChild(h("span", "", "Стоимость"));
+    total.appendChild(h("b", "", cfg.sv[state.s][1] + " ₽"));
+    box.appendChild(total);
+  }
 }
 
 function submit() {
-  if (state.s === null || state.m === null || state.d === null || state.t === null) return;
-  const data = JSON.stringify({ s: state.s, m: state.m, d: state.d, t: state.t });
-  if (inTelegram) tg.sendData(data);
-  else alert("Демо-режим (вне Telegram). Отправилось бы: " + data);
+  if (state.d === null || state.t === null || state.m === null) return;
+  if (state.move) {
+    sendData({ c: "mv", id: state.move.id, d: state.d, t: state.t });
+    return;
+  }
+  if (state.s === null) return;
+  sendData({ s: state.s, m: state.m, d: state.d, t: state.t });
+}
+
+// ---------- панель владельца ----------
+function dayTitle(i) {
+  const iso = cfg.days[i];
+  if (i === 0) return "Сегодня, " + dateObj(iso).getDate() + " " + MON_GEN[dateObj(iso).getMonth()];
+  if (i === 1) return "Завтра, " + dateObj(iso).getDate() + " " + MON_GEN[dateObj(iso).getMonth()];
+  return fullDate(iso);
+}
+
+function ownerTab(name) {
+  [["Bk", "bk"], ["St", "st"], ["Dy", "dy"]].forEach(([cap, key]) => {
+    $("tab" + cap).classList.toggle("sel", key === name);
+    $("pane" + cap).classList.toggle("hidden", key !== name);
+  });
+  window.scrollTo(0, 0);
+}
+
+function renderOwnerBookings() {
+  const box = $("paneBk");
+  box.innerHTML = "";
+  const list = cfg.bk || [];
+  if (!list.length) box.appendChild(h("div", "note", "Ближайших записей нет."));
+  let lastDay = null;
+  list.forEach(([di, time, mi, si, name, id]) => {
+    if (di !== lastDay) { box.appendChild(h("div", "dayhead", dayTitle(di))); lastDay = di; }
+    const row = h("div", "orow");
+    row.appendChild(h("div", "otime", time));
+    const info = h("div", "oinfo");
+    info.appendChild(h("div", "oname", name));
+    info.appendChild(h("div", "osub", (si >= 0 ? cfg.sv[si] : "?") + " · " + (mi >= 0 ? cfg.ms[mi] : "?")));
+    row.appendChild(info);
+    const btn = h("button", "obtn", "Отменить");
+    btn.onclick = () => askConfirm("Отменить запись " + time + ", " + name + "? Клиент получит уведомление.", () => sendData({ a: "ox", id: id }));
+    row.appendChild(btn);
+    box.appendChild(row);
+  });
+  $("oNote").textContent = (cfg.more > 0
+    ? "Показаны ближайшие " + list.length + " записей, ещё " + cfg.more + " смотри в чате: /admin. "
+    : "") + "После действия приложение закроется, а бот пришлёт подтверждение.";
+}
+
+function bars(title, items) {
+  if (!items.length) return null;
+  const box = h("div", "");
+  box.appendChild(h("div", "sec", title));
+  const max = Math.max.apply(null, items.map(x => x[1]));
+  items.forEach(([label, c]) => {
+    const row = h("div", "brow");
+    row.appendChild(h("span", "bl", label));
+    const bar = h("div", "bbar");
+    const fill = h("div", "bfill");
+    fill.style.width = Math.round((c / max) * 100) + "%";
+    bar.appendChild(fill);
+    row.appendChild(bar);
+    row.appendChild(h("span", "bc", String(c)));
+    box.appendChild(row);
+  });
+  return box;
+}
+
+function renderOwnerStats() {
+  const box = $("paneSt");
+  box.innerHTML = "";
+  const st = cfg.st;
+  const grid = h("div", "sgrid");
+  [["Сегодня", st.t, "записей"], ["7 дней", st.w, "визитов"], ["30 дней", st.m, "визитов"], ["Предстоящие", st.u, "записей"]].forEach(([label, pair, word]) => {
+    const c = h("div", "scard");
+    c.appendChild(h("div", "sl", label));
+    c.appendChild(h("div", "sn", String(pair[0])));
+    c.appendChild(h("div", "ss", word + " · " + money(pair[1])));
+    grid.appendChild(c);
+  });
+  box.appendChild(grid);
+
+  const rows = [
+    ["Отмены за 30 дней", String(st.c)],
+    ["Повторные клиенты", st.rp + "%"],
+    ["Рейтинг", st.rt[1] ? "★ " + Number(st.rt[0]).toFixed(1) + " (" + st.rt[1] + " отз.)" : "отзывов пока нет"]
+  ];
+  if (st.m[0]) rows.unshift(["Средний чек (30 дн.)", money(st.m[1] / st.m[0])]);
+  const kv = h("div", "");
+  kv.style.marginTop = "14px";
+  rows.forEach(([k, v]) => {
+    const r = h("div", "krow");
+    r.appendChild(h("span", "", k));
+    r.appendChild(h("b", "", v));
+    kv.appendChild(r);
+  });
+  box.appendChild(kv);
+
+  [bars("Услуги за 30 дней", st.sv.map(([i, c]) => [cfg.sv[i], c])),
+   bars("Мастера за 30 дней", st.ms.map(([i, c]) => [cfg.ms[i], c])),
+   bars("Популярное время", st.hr.map(([hh, c]) => [hh + ":00", c]))
+  ].forEach(b => { if (b) box.appendChild(b); });
+  box.appendChild(h("p", "note", "Выручка считается по записям, а не по реальной оплате."));
+}
+
+function renderOwnerDays() {
+  const box = $("paneDy");
+  box.innerHTML = "";
+  box.appendChild(h("div", "note", "Закрытый день: клиенты не смогут на него записаться. Уже созданные записи остаются."));
+  cfg.days.forEach((iso, i) => {
+    const closed = (cfg.cl || []).indexOf(i) >= 0;
+    const row = h("div", "dyrow");
+    const left = h("div", "");
+    left.appendChild(h("div", "", dayTitle(i)));
+    if (closed) left.appendChild(h("div", "closed", "🔒 закрыт для записи"));
+    row.appendChild(left);
+    const btn = h("button", "sbtn" + (closed ? "" : " danger"), closed ? "Открыть" : "Закрыть");
+    btn.style.flex = "none";
+    btn.style.minWidth = "96px";
+    btn.onclick = () => askConfirm((closed ? "Открыть запись на " : "Закрыть запись на ") + shortDate(iso) + "?", () => sendData({ a: "day", d: iso }));
+    row.appendChild(btn);
+    box.appendChild(row);
+  });
+}
+
+function startOwner() {
+  ["s0", "s1", "s2", "s3", "s4"].forEach(id => $(id).classList.remove("active"));
+  $("sOwner").classList.add("active");
+  $("oShop").textContent = cfg.n;
+  $("bar").style.width = "0";
+  if (inTelegram) {
+    try { tg.MainButton.hide(); tg.BackButton.hide(); } catch (e) {}
+  }
+  $("tabBk").onclick = () => ownerTab("bk");
+  $("tabSt").onclick = () => ownerTab("st");
+  $("tabDy").onclick = () => ownerTab("dy");
+  renderOwnerBookings();
+  renderOwnerStats();
+  renderOwnerDays();
+  ownerTab("bk");
 }
 
 // ---------- запуск ----------
-$("back").onclick = () => { if (step > 0) go(step - 1); };
+$("back").onclick = goBack;
 $("mainBtn").onclick = () => { if (mainHandler) mainHandler(); };
 if (inTelegram) {
   tg.MainButton.onClick(() => { if (mainHandler) mainHandler(); });
-  try { tg.BackButton.onClick(() => { if (step > 0) go(step - 1); }); } catch (e) {}
+  try { tg.BackButton.onClick(goBack); } catch (e) {}
 }
-renderHome();
-go(0);
+
+if (OWNER) {
+  startOwner();
+} else {
+  renderHome();
+  go(0);
+}
 </script>
 </body>
 </html>
