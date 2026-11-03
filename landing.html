@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0e0e10">
+<meta name="description" content="Онлайн-запись в барбершоп: выберите удобный мессенджер.">
+<title>BarberShop: запись онлайн</title>
+<style>
+  /* ====== БРЕНДИНГ: цвета те же, что в приложении ====== */
+  :root {
+    --bg: #0e0e10; --card: #17171a; --card2: #202024; --line: #2b2b31;
+    --gold: #c9a45c; --gold2: #ecd29a; --text: #f4f1ea; --muted: #8d8a84;
+    --serif: Georgia, "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 var(--sans); }
+  .page { max-width: 560px; margin: 0 auto; min-height: 100vh; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+  .hidden { display: none !important; }
+
+  .hero {
+    text-align: center; padding: 52px 20px 34px; border-bottom: 1px solid var(--line);
+    background:
+      radial-gradient(120% 90% at 50% 0%, #34281a 0%, rgba(14,14,16,0) 70%),
+      repeating-linear-gradient(135deg, rgba(201,164,92,.05) 0 2px, transparent 2px 14px);
+  }
+  .pole {
+    width: 22px; height: 78px; margin: 0 auto 16px; border-radius: 11px; border: 2px solid var(--gold);
+    background: repeating-linear-gradient(45deg, #c0392b 0 10px, #f3f3f3 10px 20px, #2c5aa0 20px 30px, #f3f3f3 30px 40px);
+    background-size: 100% 56px; animation: spin 2.4s linear infinite; box-shadow: 0 0 24px rgba(201,164,92,.35);
+  }
+  @keyframes spin { to { background-position: 0 56px; } }
+  h1 { font: 700 38px/1.1 var(--serif); letter-spacing: .04em; margin: 0 0 6px; color: var(--gold2); }
+  .tag { margin: 0 0 18px; color: var(--muted); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; }
+  .pills { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .pill { background: rgba(255,255,255,.06); border: 1px solid var(--line); border-radius: 20px; padding: 6px 12px; font-size: 13px; }
+
+  .wrap { padding: 8px 18px 40px; }
+  h2 { font: 700 26px/1.2 var(--serif); margin: 30px 0 6px; }
+  .lead { color: var(--muted); margin: 0 0 16px; }
+  .sec { font: 600 13px var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin: 34px 0 10px; }
+
+  .plat {
+    display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--text);
+    background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px; margin-bottom: 12px;
+    transition: transform .12s, border-color .2s;
+  }
+  a.plat:hover { border-color: var(--gold); }
+  a.plat:active { transform: scale(.98); }
+  .plat.main { border-color: var(--gold); background: #1f1b14; }
+  .plat.off { opacity: .55; }
+  .badge {
+    width: 52px; height: 52px; flex: none; border-radius: 50%; display: grid; place-items: center; font-size: 24px;
+    background: radial-gradient(circle at 30% 30%, #2a2418, #141210); border: 1px solid var(--gold);
+  }
+  .plat .t { font-weight: 600; font-size: 18px; }
+  .plat .s { color: var(--muted); font-size: 14px; }
+  .plat .go { margin-left: auto; color: var(--gold2); font-size: 22px; }
+
+  .prow { display: flex; align-items: baseline; gap: 8px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  .prow .dots { flex: 1; }
+  .prow b { color: var(--gold2); font-weight: 600; }
+  .masters { display: flex; gap: 12px; flex-wrap: wrap; }
+  .master { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; }
+  .ava { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font: 700 16px var(--serif); color: #141210; background: linear-gradient(135deg, var(--gold2), var(--gold)); }
+
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 0; }
+  .steps li { counter-increment: s; position: relative; padding: 12px 0 12px 46px; border-bottom: 1px dashed var(--line); }
+  .steps li::before {
+    content: counter(s); position: absolute; left: 0; top: 10px; width: 32px; height: 32px; border-radius: 50%;
+    display: grid; place-items: center; font: 700 15px var(--serif); color: var(--gold2); border: 1px solid var(--gold);
+  }
+  .foot { color: var(--muted); font-size: 13px; text-align: center; margin-top: 36px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="hero">
+    <div class="pole"></div>
+    <h1 id="name"></h1>
+    <p class="tag" id="tagline"></p>
+    <div class="pills" id="pills"></div>
+  </header>
+
+  <main class="wrap">
+    <h2>Как вам удобнее записаться?</h2>
+    <p class="lead">Выберите мессенджер. Запись займёт минуту, а накануне визита мы напомним о нём.</p>
+    <div id="platforms"></div>
+
+    <div class="sec">Услуги и цены</div>
+    <div id="services"></div>
+
+    <div class="sec">Мастера</div>
+    <div class="masters" id="masters"></div>
+
+    <div class="sec">Как это работает</div>
+    <ol class="steps">
+      <li>Откройте бота в выбранном мессенджере.</li>
+      <li>Выберите услугу, мастера, день и время.</li>
+      <li>Получите подтверждение и напоминание перед визитом. Запись можно перенести или отменить в один клик.</li>
+    </ol>
+
+    <p class="foot" id="foot"></p>
+  </main>
+</div>
+
+<script>
+// ====== НАСТРОЙКИ ЗАВЕДЕНИЯ (меняй только это) ======
+const CONFIG = {
+  name: "BarberShop",
+  tagline: "Мужские стрижки · Борода · Уход",
+  hours: "10:00 – 20:00",
+  address: "",                                   // например: "ул. Ленина, 10"
+  phone: "",                                     // например: "+7 900 000-00-00"
+  telegram: "https://t.me/BarberRecordingBot",   // ссылка на бота в Telegram
+  max: "",                                       // ссылка на бота в Max, пока пусто = «скоро»
+  services: [["Стрижка", 1000], ["Борода", 700], ["Стрижка + борода", 1500]],
+  masters: ["Алексей", "Дмитрий"]
+};
+// =====================================================
+
+function h(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+function platform(opts) {
+  const el = h(opts.href ? "a" : "div", "plat" + (opts.main ? " main" : "") + (opts.href ? "" : " off"));
+  if (opts.href) {
+    el.href = opts.href;
+    if (opts.href.indexOf("http") === 0) { el.target = "_blank"; el.rel = "noopener"; }
+  }
+  el.appendChild(h("div", "badge", opts.icon));
+  const box = h("div", "");
+  box.appendChild(h("div", "t", opts.title));
+  box.appendChild(h("div", "s", opts.sub));
+  el.appendChild(box);
+  if (opts.href) el.appendChild(h("div", "go", "›"));
+  return el;
+}
+
+document.title = CONFIG.name + ": запись онлайн";
+document.getElementById("name").textContent = CONFIG.name;
+document.getElementById("tagline").textContent = CONFIG.tagline;
+
+const pills = document.getElementById("pills");
+pills.appendChild(h("span", "pill", "🕒 " + CONFIG.hours));
+if (CONFIG.address) pills.appendChild(h("span", "pill", "📍 " + CONFIG.address));
+
+const plats = document.getElementById("platforms");
+plats.appendChild(platform({
+  icon: "✈️", title: "Telegram", main: true, href: CONFIG.telegram,
+  sub: "Запись в приложении или в чате, напоминания"
+}));
+plats.appendChild(platform({
+  icon: "💬", title: "MAX", href: CONFIG.max || "",
+  sub: CONFIG.max ? "Запись и напоминания в MAX" : "Скоро: запись появится и здесь"
+}));
+if (CONFIG.phone) {
+  plats.appendChild(platform({
+    icon: "📞", title: "Позвонить", href: "tel:" + CONFIG.phone.replace(/[^+\d]/g, ""),
+    sub: CONFIG.phone
+  }));
+}
+
+const sv = document.getElementById("services");
+CONFIG.services.forEach(([n, p]) => {
+  const r = h("div", "prow");
+  r.appendChild(h("span", "", n));
+  r.appendChild(h("span", "dots"));
+  r.appendChild(h("b", "", p + " ₽"));
+  sv.appendChild(r);
+});
+
+const ms = document.getElementById("masters");
+CONFIG.masters.forEach(n => {
+  const m = h("div", "master");
+  m.appendChild(h("div", "ava", n.charAt(0)));
+  m.appendChild(h("span", "", n));
+  ms.appendChild(m);
+});
+
+document.getElementById("foot").textContent = CONFIG.name + (CONFIG.address ? " · " + CONFIG.address : "");
+</script>
+</body>
+</html>

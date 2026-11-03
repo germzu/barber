@@ -160,6 +160,11 @@
   .dyrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
   .dyrow .closed { color: var(--danger); font-size: 13px; }
 
+  .stale {
+    background: #2a1d1d; border: 1px solid #7a3b3b; color: var(--danger);
+    border-radius: 12px; padding: 10px 12px; margin-top: 14px; font-size: 14px;
+  }
+
   #mainBtn {
     position: fixed; left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 20;
     border: 0; border-radius: 14px; padding: 16px; font: 700 16px var(--sans); color: #15120d;
@@ -181,6 +186,7 @@
     <div class="pills"><span class="pill" id="pRating"></span><span class="pill" id="pHours"></span><span class="pill hidden" id="pDemo"></span></div>
   </div>
   <div class="pad">
+    <div class="stale hidden" id="staleC"></div>
     <div class="sec hidden" id="myT">Ваши записи</div>
     <div id="myBox"></div>
     <div class="sec">Услуги и цены</div>
@@ -220,7 +226,7 @@
   <div class="hero small">
     <div class="pole"></div>
     <h1 id="oShop"></h1>
-    <p class="tag">Панель владельца</p>
+    <p class="tag" id="oTag">Панель владельца</p>
   </div>
   <div class="tabs">
     <button class="tab sel" id="tabBk">Записи</button>
@@ -228,6 +234,7 @@
     <button class="tab" id="tabDy">Дни</button>
   </div>
   <div class="pad">
+    <div class="stale hidden" id="staleO"></div>
     <div id="paneBk"></div>
     <div id="paneSt" class="hidden"></div>
     <div id="paneDy" class="hidden"></div>
@@ -296,6 +303,8 @@ try {
 } catch (e) { console.error("Не удалось прочитать данные", e); }
 const OWNER = cfg.mode === "owner";
 const IS_DEMO = cfg === DEMO;
+// Время, когда бот сформировал ссылку (секунды). По нему понятно, не устарели ли данные.
+const V = Number(new URLSearchParams(location.search).get("v")) || 0;
 
 // ---------- утилиты ----------
 const $ = id => document.getElementById(id);
@@ -325,6 +334,22 @@ function addMin(t, add) {
 }
 function money(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₽"; }
 function buzz() { try { tg.HapticFeedback.selectionChanged(); } catch (e) {} }
+
+function hhmm(sec) {
+  const d = new Date(sec * 1000);
+  return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+}
+function checkStale() {
+  if (!V) return;
+  const age = Date.now() / 1000 - V;
+  const el = $(OWNER ? "staleO" : "staleC");
+  if (age > (OWNER ? 120 : 600)) {
+    el.textContent = OWNER
+      ? "⚠ Данные на " + hhmm(V) + " могли устареть. Чтобы обновить, закройте панель и откройте заново кнопкой «🛠 Панель владельца» (после любого уведомления бота она свежая) или через /admin."
+      : "⚠ Данные на " + hhmm(V) + " могли устареть. Откройте приложение заново через /start.";
+    el.classList.remove("hidden");
+  }
+}
 
 function sendData(obj) {
   const data = JSON.stringify(obj);
@@ -693,6 +718,7 @@ function startOwner() {
   ["s0", "s1", "s2", "s3", "s4"].forEach(id => $(id).classList.remove("active"));
   $("sOwner").classList.add("active");
   $("oShop").textContent = cfg.n;
+  if (V) $("oTag").textContent = "Панель владельца · данные на " + hhmm(V);
   $("bar").style.width = "0";
   if (inTelegram) {
     try { tg.MainButton.hide(); tg.BackButton.hide(); } catch (e) {}
@@ -720,6 +746,8 @@ if (OWNER) {
   renderHome();
   go(0);
 }
+checkStale();
+setInterval(checkStale, 30000);
 </script>
 </body>
 </html>
